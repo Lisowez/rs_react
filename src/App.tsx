@@ -6,7 +6,7 @@ import ErrorBoundary from './ErrorBoundary/ErrorBoundary';
 interface Item {
   id: number;
   name: string;
-  description: string;
+  actor: string;
 }
 
 interface AppState {
@@ -35,9 +35,7 @@ class App extends Component<object, AppState> {
 
   fetchData = () => {
     const { searchTerm } = this.state;
-    const trimmedSearchTerm = searchTerm.trim();
-    const apiUrl = `https://api.example.com/search?q=${trimmedSearchTerm || ''}`;
-
+    const apiUrl = `https://hp-api.onrender.com/api/characters`;
     this.setState({ loading: true });
 
     fetch(apiUrl)
@@ -47,17 +45,22 @@ class App extends Component<object, AppState> {
         }
         return response.json();
       })
-      .then((data: { items: Item[] }) =>
-        this.setState({ results: data.items, loading: false })
-      )
+      .then((data: Item[]) => {
+        console.log('API Response:', data);
+        const filteredResults = data.filter((item) =>
+          item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        this.setState({ results: filteredResults, loading: false });
+      })
       .catch((error) =>
         this.setState({ error: error.message, loading: false })
       );
   };
 
   handleSearch = (term: string) => {
-    this.setState({ searchTerm: term }, () => {
-      localStorage.setItem('searchTerm', term);
+    const trimmedSearchTerm = term.trim();
+    this.setState({ searchTerm: trimmedSearchTerm }, () => {
+      localStorage.setItem('searchTerm', trimmedSearchTerm);
       this.fetchData();
     });
   };

@@ -3,7 +3,7 @@ import React from 'react';
 interface Item {
   id: number;
   name: string;
-  description: string;
+  actor: string;
 }
 
 interface ResultsProps {
@@ -19,7 +19,7 @@ const Results: React.FC<ResultsProps> = ({ results }) => {
           results.map((item) => (
             <li key={item.id}>
               <h3>{item.name}</h3>
-              <p>{item.description}</p>
+              <p>{item.actor}</p>
             </li>
           ))
         ) : (

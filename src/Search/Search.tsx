@@ -8,14 +8,24 @@ interface SearchProps {
 
 interface SearchState {
   inputValue: string;
+  isError: boolean;
 }
 
 class Search extends Component<SearchProps, SearchState> {
   constructor(props: SearchProps) {
     super(props);
+    // Инициализация состояния inputValue из props
     this.state = {
-      inputValue: this.props.searchTerm,
+      inputValue: props.searchTerm,
+      isError: false,
     };
+  }
+
+  // Обновляем состояние inputValue при каждом изменении searchTerm в props
+  componentDidUpdate(prevProps: SearchProps) {
+    if (prevProps.searchTerm !== this.props.searchTerm) {
+      this.setState({ inputValue: this.props.searchTerm });
+    }
   }
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,6 +38,9 @@ class Search extends Component<SearchProps, SearchState> {
   };
 
   render() {
+    if (this.state.isError) {
+      throw new Error('123');
+    }
     return (
       <div>
         <input
@@ -38,6 +51,13 @@ class Search extends Component<SearchProps, SearchState> {
         />
         <button onClick={this.handleSearch} disabled={this.props.loading}>
           {this.props.loading ? 'Searching...' : 'Search'}
+        </button>
+        <button
+          onClick={() => {
+            this.setState({ isError: true });
+          }}
+        >
+          throw error
         </button>
       </div>
     );
