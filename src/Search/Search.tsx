@@ -14,14 +14,12 @@ interface SearchState {
 class Search extends Component<SearchProps, SearchState> {
   constructor(props: SearchProps) {
     super(props);
-    // Инициализация состояния inputValue из props
     this.state = {
       inputValue: props.searchTerm,
       isError: false,
     };
   }
 
-  // Обновляем состояние inputValue при каждом изменении searchTerm в props
   componentDidUpdate(prevProps: SearchProps) {
     if (prevProps.searchTerm !== this.props.searchTerm) {
       this.setState({ inputValue: this.props.searchTerm });
@@ -39,10 +37,25 @@ class Search extends Component<SearchProps, SearchState> {
 
   render() {
     if (this.state.isError) {
-      throw new Error('123');
+      throw new Error('Test error');
     }
     return (
-      <div>
+      <header
+        style={{
+          display: 'flex',
+          width: '100%',
+          height: '10%',
+          flexDirection: 'row',
+          gap: '50px',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          textAlign: 'center',
+          margin: '0 auto',
+          backgroundColor: 'yellow',
+          padding: '20px',
+        }}
+      >
+        <h1>Harry Potter app</h1>
         <input
           type="text"
           value={this.state.inputValue}
@@ -57,9 +70,9 @@ class Search extends Component<SearchProps, SearchState> {
             this.setState({ isError: true });
           }}
         >
-          throw error
+          Throw error
         </button>
-      </div>
+      </header>
     );
   }
 }

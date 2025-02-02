@@ -24,7 +24,28 @@ class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
+      return (
+        <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'black',
+            color: 'yellow',
+            marginTop: '0px',
+            fontSize: '30px',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <h1>Something went wrong.</h1>
+          <button onClick={() => this.setState({ hasError: false })}>
+            Try again
+          </button>
+        </div>
+      );
     }
     return this.props.children;
   }

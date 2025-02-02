@@ -46,11 +46,12 @@ class App extends Component<object, AppState> {
         return response.json();
       })
       .then((data: Item[]) => {
-        console.log('API Response:', data);
         const filteredResults = data.filter((item) =>
           item.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-        this.setState({ results: filteredResults, loading: false });
+        setTimeout(() => {
+          this.setState({ results: filteredResults, loading: false });
+        }, 1000);
       })
       .catch((error) =>
         this.setState({ error: error.message, loading: false })
@@ -71,18 +72,12 @@ class App extends Component<object, AppState> {
     return (
       <ErrorBoundary>
         <>
-          <header>
-            <h1>Search Application</h1>
-            <Search
-              searchTerm={searchTerm}
-              onSearch={this.handleSearch}
-              loading={loading}
-            />
-          </header>
-          {loading && <p>Loading...</p>}
-          {error && <p>Error: {error}</p>}
-
-          <Results results={results} />
+          <Search
+            searchTerm={searchTerm}
+            onSearch={this.handleSearch}
+            loading={loading}
+          />
+          <Results results={results} error={error} loading={loading} />
         </>
       </ErrorBoundary>
     );
