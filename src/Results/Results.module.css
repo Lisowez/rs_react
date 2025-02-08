@@ -21,7 +21,7 @@
 
 .loading {
   width: 100%;
-  height: 90vh;
+  height: 100%;
   background-color: black;
   color: yellow;
   margin-top: 0;
@@ -35,7 +35,7 @@
 
 .resultsContainer {
   width: 100%;
-  height: 78vh;
+  height: 77vh;
   background-color: black;
   color: yellow;
   padding-top: 20px;
@@ -64,7 +64,6 @@
 
 .resultsScrollable {
   padding: 0 10%;
-  overflow-y: scroll;
   height: 100%;
   width: 100%;
   background-color: black;
@@ -77,8 +76,7 @@
   justify-content: space-between;
 }
 
-.error,
-.loading {
+.error {
   width: 100%;
   height: 90vh;
   background-color: black;

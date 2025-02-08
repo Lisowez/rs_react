@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import s from './Results.module.css';
 
 interface Item {
@@ -14,7 +14,11 @@ interface ResultsProps {
 }
 
 const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
-  // Если есть ошибка, отображаем компонент с ошибкой
+  const [pagination, setPagination] = useState(0);
+  const [searchResult, setSearchResult] = useState(results);
+
+  useEffect(()=>{},[])
+
   if (error) {
     return <p className={s.error}>Error: {error}</p>;
   }
@@ -35,7 +39,7 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
 
         <div className={s.resultsScrollable}>
           {results.length > 0 ? (
-            results.map((item) => (
+            results.slice(0 + pagination, 10 + pagination).map((item) => (
               <div key={item.id} className={s.resultItem}>
                 <h3>{item.name}</h3>
                 <p style={{ color: item.actor ? 'yellow' : 'red' }}>
@@ -47,6 +51,13 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
             <h2>No results found.</h2>
           )}
         </div>
+        {results.length > 10 && (
+          <div className={s.pagination}>
+            <button onClick={() => setPagination(pagination - 10)} disabled={pagination === 0}>{`<<< Previous`}</button>
+            <button onClick={() => setPagination(pagination + 10)} disabled={results.length < 10 + pagination}>{`Next >>>`}</button>
+            <span style={{ color: 'black' }}>{`Page ${Math.ceil((pagination + 10) / 10)} of ${Math.ceil(results.length / 10)}`}</span>
+          </div>
+        )}
       </div>
     </main>
   );
