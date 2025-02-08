@@ -14,80 +14,29 @@ interface ResultsProps {
 }
 
 const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
+  // Если есть ошибка, отображаем компонент с ошибкой
   if (error) {
-    return (
-      <p
-        style={{
-          width: '100%',
-          height: '90vh',
-          backgroundColor: 'black',
-          color: 'yellow',
-          marginTop: '0px',
-          fontSize: '30px',
-          textAlign: 'center',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        Error: {error}
-      </p>
-    );
+    return <p className={s.error}>Error: {error}</p>;
   }
+
+  // Если загрузка, отображаем компонент загрузки
   if (loading) {
     return <p className={s.loading}>Loading...</p>;
   }
+
   return (
-    <main
-      style={{
-        width: '100%',
-        height: '90vh',
-        backgroundColor: 'black',
-        color: 'yellow',
-        paddingTop: '20px',
-      }}
-    >
-      <h2 style={{ marginTop: '0px' }}>Search Results</h2>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          height: '100%',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '10px',
-            width: 'calc(100% - 20px)',
-            justifyContent: 'space-between',
-            padding: '0 10%',
-          }}
-        >
-          <div style={{ borderBottom: '1px solid yellow' }}>NAME:</div>
-          <div style={{ borderBottom: '1px solid yellow' }}>ACTOR:</div>
+    <main className={s.resultsContainer}>
+      <h2>Search Results</h2>
+      <div className={s.resultsList}>
+        <div className={s.headers}>
+          <div className={s.headerCell}>NAME:</div>
+          <div className={s.headerCell}>ACTOR:</div>
         </div>
-        <div
-          style={{
-            padding: '0 10%',
-            overflowY: 'scroll',
-            height: '100%',
-            width: '100%',
-          }}
-        >
+
+        <div className={s.resultsScrollable}>
           {results.length > 0 ? (
             results.map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: '10px',
-                  justifyContent: 'space-between',
-                }}
-              >
+              <div key={item.id} className={s.resultItem}>
                 <h3>{item.name}</h3>
                 <p style={{ color: item.actor ? 'yellow' : 'red' }}>
                   {item.actor || 'Name not found'}
@@ -95,7 +44,7 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
               </div>
             ))
           ) : (
-            <h2 style={{ marginTop: '40%' }}>No results found.</h2>
+            <h2>No results found.</h2>
           )}
         </div>
       </div>
