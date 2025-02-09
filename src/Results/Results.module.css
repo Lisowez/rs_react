@@ -35,7 +35,7 @@
 
 .resultsContainer {
   width: 100%;
-  height: 77vh;
+  height: 82vh;
   background-color: black;
   color: yellow;
   padding-top: 20px;
@@ -87,4 +87,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.pagination {
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding-bottom: 30px;
 }

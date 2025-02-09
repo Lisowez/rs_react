@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Search from './Search/Search';
-import Results from './Results/Results';
 import ErrorBoundary from './ErrorBoundary/ErrorBoundary';
+import Layout from './Layout/Layout';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Details from './Details/Details';
+import useLocalStorage from './utils/useLocalStorage';
+import NotFoundPage from './NotFoundPage/NotFoundPage';
 
 interface Item {
   id: number;
@@ -10,16 +13,10 @@ interface Item {
 }
 
 const App: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
   const [results, setResults] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const savedSearchTerm = localStorage.getItem('searchTerm') || '';
-    setSearchTerm(savedSearchTerm);
-    fetchData(savedSearchTerm);
-  }, []);
 
   const fetchData = (term: string) => {
     const apiUrl = `https://hp-api.onrender.com/api/characters`;
@@ -47,23 +44,39 @@ const App: React.FC = () => {
       });
   };
 
+  useEffect(() => {
+    handleSearch(searchTerm);
+  }, []);
+
   const handleSearch = (term: string) => {
     const trimmedSearchTerm = term.trim();
     setSearchTerm(trimmedSearchTerm);
-    localStorage.setItem('searchTerm', trimmedSearchTerm);
     fetchData(trimmedSearchTerm);
   };
 
   return (
     <ErrorBoundary>
-      <>
-        <Search
-          searchTerm={searchTerm}
-          onSearch={handleSearch}
-          loading={loading}
-        />
-        <Results results={results} error={error} loading={loading} />
-      </>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/search/1" />} />
+          <Route
+            path="/search/:page"
+            element={
+              <Layout
+                searchTerm={searchTerm}
+                onSearch={handleSearch}
+                loading={loading}
+                results={results}
+                error={error}
+              />
+            }
+          >
+            <Route path="/search/:page/details" element={<Details />} />
+            {/* Добавили этот маршрут */}
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 };

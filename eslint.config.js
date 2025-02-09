@@ -36,6 +36,7 @@ export default tseslint.config(
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
       'react/jsx-no-target-blank': 'off',
+      'react-hooks/exhaustive-deps': 'off',
     },
     settings: {
       react: {

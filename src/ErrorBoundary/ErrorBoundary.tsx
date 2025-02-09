@@ -40,7 +40,7 @@ class ErrorBoundary extends Component<Props, State> {
             alignItems: 'center',
           }}
         >
-          <h1>Something went wrong.</h1>
+          <h1 style={{ marginBottom: '20px' }}>Something went wrong.</h1>
           <button onClick={() => this.setState({ hasError: false })}>
             Try again
           </button>
