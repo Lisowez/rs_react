@@ -1,7 +1,10 @@
-import React, { Component } from 'react';
-import Search from './Search/Search';
-import Results from './Results/Results';
+import React, { useState, useEffect } from 'react';
 import ErrorBoundary from './ErrorBoundary/ErrorBoundary';
+import Layout from './Layout/Layout';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Details from './Details/Details';
+import useLocalStorage from './utils/useLocalStorage';
+import NotFoundPage from './NotFoundPage/NotFoundPage';
 
 interface Item {
   id: number;
@@ -9,34 +12,15 @@ interface Item {
   actor: string;
 }
 
-interface AppState {
-  searchTerm: string;
-  results: Item[];
-  loading: boolean;
-  error: string | null;
-}
+const App: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
+  const [results, setResults] = useState<Item[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-class App extends Component<object, AppState> {
-  constructor(props: object) {
-    super(props);
-
-    this.state = {
-      searchTerm: '',
-      results: [],
-      loading: false,
-      error: null,
-    };
-  }
-
-  componentDidMount() {
-    const savedSearchTerm = localStorage.getItem('searchTerm') || '';
-    this.setState({ searchTerm: savedSearchTerm }, this.fetchData);
-  }
-
-  fetchData = () => {
-    const { searchTerm } = this.state;
+  const fetchData = (term: string) => {
     const apiUrl = `https://hp-api.onrender.com/api/characters`;
-    this.setState({ loading: true });
+    setLoading(true);
 
     fetch(apiUrl)
       .then((response) => {
@@ -47,41 +31,54 @@ class App extends Component<object, AppState> {
       })
       .then((data: Item[]) => {
         const filteredResults = data.filter((item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase())
+          item.name.toLowerCase().includes(term.toLowerCase())
         );
         setTimeout(() => {
-          this.setState({ results: filteredResults, loading: false });
+          setResults(filteredResults);
+          setLoading(false);
         }, 1000);
       })
-      .catch((error) =>
-        this.setState({ error: error.message, loading: false })
-      );
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
   };
 
-  handleSearch = (term: string) => {
+  useEffect(() => {
+    handleSearch(searchTerm);
+  }, []);
+
+  const handleSearch = (term: string) => {
     const trimmedSearchTerm = term.trim();
-    this.setState({ searchTerm: trimmedSearchTerm }, () => {
-      localStorage.setItem('searchTerm', trimmedSearchTerm);
-      this.fetchData();
-    });
+    setSearchTerm(trimmedSearchTerm);
+    fetchData(trimmedSearchTerm);
   };
 
-  render() {
-    const { searchTerm, results, loading, error } = this.state;
-
-    return (
-      <ErrorBoundary>
-        <>
-          <Search
-            searchTerm={searchTerm}
-            onSearch={this.handleSearch}
-            loading={loading}
-          />
-          <Results results={results} error={error} loading={loading} />
-        </>
-      </ErrorBoundary>
-    );
-  }
-}
+  return (
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/search/1" />} />
+          <Route
+            path="/search/:page"
+            element={
+              <Layout
+                searchTerm={searchTerm}
+                onSearch={handleSearch}
+                loading={loading}
+                results={results}
+                error={error}
+              />
+            }
+          >
+            <Route path="/search/:page/details" element={<Details />} />
+            {/* Добавили этот маршрут */}
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
+  );
+};
 
 export default App;

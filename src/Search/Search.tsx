@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface SearchProps {
   searchTerm: string;
@@ -6,75 +6,55 @@ interface SearchProps {
   loading: boolean;
 }
 
-interface SearchState {
-  inputValue: string;
-  isError: boolean;
-}
+const Search: React.FC<SearchProps> = ({ searchTerm, onSearch, loading }) => {
+  const [inputValue, setInputValue] = useState<string>(searchTerm);
+  const [isError, setIsError] = useState<boolean>(false);
 
-class Search extends Component<SearchProps, SearchState> {
-  constructor(props: SearchProps) {
-    super(props);
-    this.state = {
-      inputValue: props.searchTerm,
-      isError: false,
-    };
-  }
+  useEffect(() => {
+    setInputValue(searchTerm);
+  }, [searchTerm]);
 
-  componentDidUpdate(prevProps: SearchProps) {
-    if (prevProps.searchTerm !== this.props.searchTerm) {
-      this.setState({ inputValue: this.props.searchTerm });
-    }
-  }
-
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ inputValue: event.target.value });
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
   };
 
-  handleSearch = () => {
-    const { inputValue } = this.state;
-    this.props.onSearch(inputValue);
+  const handleSearch = () => {
+    onSearch(inputValue);
   };
 
-  render() {
-    if (this.state.isError) {
-      throw new Error('Test error');
-    }
-    return (
-      <header
-        style={{
-          display: 'flex',
-          width: '100%',
-          height: '10%',
-          flexDirection: 'row',
-          gap: '50px',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          textAlign: 'center',
-          margin: '0 auto',
-          backgroundColor: 'yellow',
-          padding: '20px',
-        }}
-      >
-        <h1>Harry Potter app</h1>
-        <input
-          type="text"
-          value={this.state.inputValue}
-          onChange={this.handleChange}
-          placeholder="Enter search term"
-        />
-        <button onClick={this.handleSearch} disabled={this.props.loading}>
-          {this.props.loading ? 'Searching...' : 'Search'}
-        </button>
-        <button
-          onClick={() => {
-            this.setState({ isError: true });
-          }}
-        >
-          Throw error
-        </button>
-      </header>
-    );
+  if (isError) {
+    throw new Error('Test error');
   }
-}
+
+  return (
+    <header
+      style={{
+        display: 'flex',
+        width: '99vw',
+        height: '10%',
+        flexDirection: 'row',
+        gap: '50px',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        textAlign: 'center',
+        margin: '0 auto',
+        backgroundColor: 'yellow',
+        padding: '20px',
+      }}
+    >
+      <h1>Harry Potter app</h1>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleChange}
+        placeholder="Enter search term"
+      />
+      <button onClick={handleSearch} disabled={loading}>
+        {loading ? 'Searching...' : 'Search'}
+      </button>
+      <button onClick={() => setIsError(true)}>Throw error</button>
+    </header>
+  );
+};
 
 export default Search;

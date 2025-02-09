@@ -1,0 +1,32 @@
+.infoUser {
+  height: 86vh;
+  background-color: black;
+  color: gold;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  font-size: 30px;
+  width: 30%;
+  border: 5px solid gold;
+  padding: 20px;
+}
+
+.item_img {
+  margin: 0 auto;
+  width: 200px;
+  height: 255px;
+}
+
+.close{
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.closeBtn{
+  font-size: 20px;
+  color: gold;
+  background-color: black;
+  border: none;
+  cursor: pointer;
+}
