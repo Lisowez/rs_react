@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { ThemeContext } from '../App';
 
 interface SearchProps {
   searchTerm: string;
@@ -9,6 +10,7 @@ interface SearchProps {
 const Search: React.FC<SearchProps> = ({ searchTerm, onSearch, loading }) => {
   const [inputValue, setInputValue] = useState<string>(searchTerm);
   const [isError, setIsError] = useState<boolean>(false);
+  const { theme, setTheme } = useContext(ThemeContext);
 
   useEffect(() => {
     setInputValue(searchTerm);
@@ -51,6 +53,9 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearch, loading }) => {
       />
       <button onClick={handleSearch} disabled={loading}>
         {loading ? 'Searching...' : 'Search'}
+      </button>
+      <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+        Change on {theme === 'light' ? 'dark' : 'light'} theme
       </button>
       <button onClick={() => setIsError(true)}>Throw error</button>
     </header>

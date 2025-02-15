@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import s from './Results.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ThemeContext } from '../App';
 
 export interface Item {
   id: number;
@@ -18,6 +19,7 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [pagination, setPagination] = useState(0);
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     const numberPage = location.pathname.split('/')[2];
@@ -27,19 +29,56 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
   }, [location]);
 
   if (error) {
-    return <p className={s.error}>Error: {error}</p>;
+    return (
+      <p
+        style={{
+          color: theme === 'light' ? 'black' : 'yellow',
+          backgroundColor: theme === 'light' ? 'white' : 'black',
+        }}
+        className={s.error}
+      >
+        Error: {error}
+      </p>
+    );
   }
 
   // Если загрузка, отображаем компонент загрузки
   if (loading) {
-    return <p className={s.loading}>Loading...</p>;
+    return (
+      <p
+        style={{
+          color: theme === 'light' ? 'black' : 'yellow',
+          backgroundColor: theme === 'light' ? 'white' : 'black',
+        }}
+        className={s.loading}
+      >
+        Loading...
+      </p>
+    );
   }
 
   return (
-    <main className={s.resultsContainer}>
+    <main
+      className={s.resultsContainer}
+      style={{
+        backgroundColor: theme === 'light' ? 'white' : 'black',
+        color: theme === 'light' ? 'black' : 'yellow',
+      }}
+    >
       <h2>Search Results</h2>
-      <div className={s.resultsList}>
-        <div className={s.headers}>
+      <div
+        className={s.resultsList}
+        style={{
+          backgroundColor: theme === 'light' ? 'white' : 'black',
+          color: theme === 'light' ? 'black' : 'yellow',
+        }}
+      >
+        <div
+          className={s.headers}
+          style={{
+            borderBottom: `1px solid ${theme === 'light' ? 'black' : 'yellow'}`,
+          }}
+        >
           <div className={s.headerCell}>NAME:</div>
           <div className={s.headerCell}>ACTOR:</div>
         </div>
@@ -57,7 +96,13 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
                   }}
                 >
                   <h3>{item.name}</h3>
-                  <p style={{ color: item.actor ? 'yellow' : 'red' }}>
+                  <p
+                    style={{
+                      color: item.actor
+                        ? `${theme === 'light' ? 'black' : 'yellow'}`
+                        : 'red',
+                    }}
+                  >
                     {item.actor || 'Name not found'}
                   </p>
                 </div>
@@ -69,6 +114,10 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
         {results.length > 10 && (
           <div className={s.pagination}>
             <button
+              style={{
+                color: `${theme === 'light' ? 'yellow' : 'black'}`,
+                backgroundColor: `${theme === 'light' ? 'black' : 'white'}`,
+              }}
               onClick={() => {
                 const locationArr = location.pathname.split('/');
                 locationArr[2] = (pagination - 1).toString();
@@ -78,6 +127,10 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
               disabled={pagination === 1}
             >{`<<< Previous`}</button>
             <button
+              style={{
+                color: `${theme === 'light' ? 'yellow' : 'black'}`,
+                backgroundColor: `${theme === 'light' ? 'black' : 'white'}`,
+              }}
               onClick={() => {
                 const nextPage = pagination + 1;
                 const locationArr = location.pathname.split('/');
@@ -88,7 +141,7 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
               disabled={results.length / 10 <= pagination}
             >{`Next >>>`}</button>
             <span
-              style={{ color: 'yellow' }}
+              style={{ color: `${theme === 'light' ? 'black' : 'yellow'}` }}
             >{`Page ${pagination} of ${Math.ceil(results.length / 10)}`}</span>
           </div>
         )}

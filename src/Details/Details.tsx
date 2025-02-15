@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import s from './Details.module.css';
+import { ThemeContext } from '../App';
 
 interface IItem {
   name: string;
@@ -16,6 +17,7 @@ const Details = () => {
   const params = useLocation();
   const id = params.search.split('=')[1];
   const navigate = useNavigate();
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     setIsLoading(true);
@@ -32,11 +34,28 @@ const Details = () => {
   }, [params, id]);
 
   return (
-    <div className={s.infoUser}>
+    <div
+      className={s.infoUser}
+      style={{
+        backgroundColor: theme === 'light' ? 'white' : 'black',
+        color: theme === 'light' ? 'black' : 'yellow',
+        borderLeft: theme === 'light' ? '5px solid black' : '5px solid yellow',
+      }}
+    >
       {!isLoading && (
         <>
-          <div className={s.close}>
+          <div
+            className={s.close}
+            style={{
+              color: theme === 'light' ? 'black' : 'yellow',
+              backgroundColor: theme === 'light' ? 'white' : 'black',
+            }}
+          >
             <button
+              style={{
+                color: theme === 'light' ? 'black' : 'yellow',
+                backgroundColor: theme === 'light' ? 'white' : 'black',
+              }}
               className={s.closeBtn}
               onClick={() => {
                 const curentPathName = params.pathname;
