@@ -6,12 +6,7 @@ import Details from './Details/Details';
 import useLocalStorage from './utils/useLocalStorage';
 import NotFoundPage from './NotFoundPage/NotFoundPage';
 import { createContext } from 'react';
-
-interface Item {
-  id: number;
-  name: string;
-  actor: string;
-}
+import { Item, useGetCharactersQuery } from './provider/api';
 
 export const ThemeContext = createContext<{
   theme: 'light' | 'dark';
@@ -24,39 +19,21 @@ export const ThemeContext = createContext<{
 const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
   const [results, setResults] = useState<Item[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const { data, isLoading, isError } = useGetCharactersQuery();
 
   const fetchData = (term: string) => {
-    const apiUrl = `https://hp-api.onrender.com/api/characters`;
-    setLoading(true);
-
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data: Item[]) => {
-        const filteredResults = data.filter((item) =>
-          item.name.toLowerCase().includes(term.toLowerCase())
-        );
-        setTimeout(() => {
-          setResults(filteredResults);
-          setLoading(false);
-        }, 1000);
-      })
-      .catch((error) => {
-        setError(error.message);
-        setLoading(false);
-      });
+    if (data) {
+      const filteredResults = data.filter((item) =>
+        item.name.toLowerCase().includes(term.toLowerCase())
+      );
+      setResults(filteredResults);
+    }
   };
 
   useEffect(() => {
     handleSearch(searchTerm);
-  }, []);
+  }, [data]);
 
   const handleSearch = (term: string) => {
     const trimmedSearchTerm = term.trim();
@@ -76,9 +53,9 @@ const App: React.FC = () => {
                 <Layout
                   searchTerm={searchTerm}
                   onSearch={handleSearch}
-                  loading={loading}
-                  results={results}
-                  error={error}
+                  loading={isLoading}
+                  results={results || []}
+                  error={isError ? 'Error' : null}
                 />
               }
             >

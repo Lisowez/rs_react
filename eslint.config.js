@@ -37,6 +37,7 @@ export default tseslint.config(
       ...react.configs['jsx-runtime'].rules,
       'react/jsx-no-target-blank': 'off',
       'react-hooks/exhaustive-deps': 'off',
+      '@typescript-eslint/no-invalid-void-type': 'off',
     },
     settings: {
       react: {

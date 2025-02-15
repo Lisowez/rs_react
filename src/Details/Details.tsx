@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import s from './Details.module.css';
 import { ThemeContext } from '../App';
+import { useGetCharacterByIDQuery } from '../provider/api';
 
 interface IItem {
   name: string;
@@ -13,25 +14,17 @@ interface IItem {
 
 const Details = () => {
   const [infoUser, setInfoUser] = useState<IItem | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const params = useLocation();
   const id = params.search.split('=')[1];
   const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
+  const { data, isLoading } = useGetCharacterByIDQuery(id);
 
   useEffect(() => {
-    setIsLoading(true);
-    const fetchUser = async () => {
-      const response = await fetch(
-        `https://hp-api.onrender.com/api/character/${id}`
-      );
-      const data = await response.json();
-      setIsLoading(false);
+    if (data) {
       setInfoUser(data[0]);
-    };
-
-    fetchUser();
-  }, [params, id]);
+    }
+  }, [data]);
 
   return (
     <div

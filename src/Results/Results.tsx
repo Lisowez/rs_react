@@ -2,6 +2,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import s from './Results.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../App';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addFavorite,
+  clearFavorites,
+  getFavorites,
+  removeFavorite,
+} from '../provider/reduxProvider';
 
 export interface Item {
   id: number;
@@ -20,6 +27,8 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
   const navigate = useNavigate();
   const [pagination, setPagination] = useState(0);
   const { theme } = useContext(ThemeContext);
+  const favorites = useSelector(getFavorites);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const numberPage = location.pathname.split('/')[2];
@@ -57,6 +66,52 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
     );
   }
 
+  const convertToCSV = (data: Item[]) => {
+    const headers = [
+      'name',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      'actor',
+    ];
+    const rows = data.map((item) => [
+      item.name,
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      ' ',
+      item.actor,
+    ]);
+    return [headers, ...rows].map((e) => e.join(' ')).join('\n');
+  };
+
+  const downloadCSV = () => {
+    const selectedItems = results.filter((item) => favorites.includes(item.id));
+    const csvData = convertToCSV(selectedItems);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fileName = `${selectedItems.length}_characters.csv`;
+    a.setAttribute('href', url);
+    a.setAttribute('download', fileName);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <main
       className={s.resultsContainer}
@@ -73,37 +128,61 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
           color: theme === 'light' ? 'black' : 'yellow',
         }}
       >
-        <div
-          className={s.headers}
-          style={{
-            borderBottom: `1px solid ${theme === 'light' ? 'black' : 'yellow'}`,
-          }}
-        >
+        <div className={s.headers}>
           <div className={s.headerCell}>NAME:</div>
           <div className={s.headerCell}>ACTOR:</div>
         </div>
 
-        <div className={s.resultsScrollable}>
+        <div
+          className={s.resultsScrollable}
+          style={{
+            borderTop: `1px solid ${theme === 'light' ? 'black' : 'yellow'}`,
+            paddingTop: '10px',
+          }}
+        >
           {results.length > 0 ? (
             results
               .slice(10 * (pagination - 1), 10 * pagination)
               .map((item) => (
-                <div
-                  key={item.id}
-                  className={s.resultItem}
-                  onClick={() => {
-                    navigate(`details?id=${item.id}`);
-                  }}
-                >
-                  <h3>{item.name}</h3>
+                <div key={item.id} className={s.resultItem}>
+                  <h3
+                    onClick={() => {
+                      navigate(`details?id=${item.id}`);
+                    }}
+                    style={{
+                      width: '30%',
+                      display: 'flex',
+                      alignContent: 'start',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {item.name}
+                  </h3>
                   <p
                     style={{
                       color: item.actor
                         ? `${theme === 'light' ? 'black' : 'yellow'}`
                         : 'red',
+                      width: '20%',
+                      display: 'flex',
+                      alignContent: 'start',
                     }}
                   >
                     {item.actor || 'Name not found'}
+                  </p>
+                  <p
+                    style={{ cursor: 'pointer', width: '30%' }}
+                    onClick={() => {
+                      if (favorites.includes(item.id)) {
+                        dispatch(removeFavorite(item.id));
+                      } else {
+                        dispatch(addFavorite(item.id));
+                      }
+                    }}
+                  >
+                    {favorites.includes(item.id)
+                      ? 'Remove from favorites'
+                      : 'Add to favorites'}
                   </p>
                 </div>
               ))
@@ -146,6 +225,43 @@ const Results: React.FC<ResultsProps> = ({ results, error, loading }) => {
           </div>
         )}
       </div>
+      {favorites.length > 0 && (
+        <div
+          style={{
+            width: '15%',
+            position: 'absolute',
+            bottom: '5px',
+            right: '5px',
+            border: `1px solid ${theme === 'light' ? 'black' : 'yellow'}`,
+          }}
+        >
+          <div>
+            {favorites.length > 1
+              ? `${favorites.length} items selected`
+              : `${favorites.length} item selected`}
+          </div>
+          <div>
+            <button
+              onClick={() => dispatch(clearFavorites())}
+              style={{
+                color: `${theme === 'light' ? 'yellow' : 'black'}`,
+                backgroundColor: `${theme === 'light' ? 'black' : 'white'}`,
+              }}
+            >
+              Unselect all
+            </button>
+            <button
+              onClick={() => downloadCSV()}
+              style={{
+                color: `${theme === 'light' ? 'yellow' : 'black'}`,
+                backgroundColor: `${theme === 'light' ? 'black' : 'white'}`,
+              }}
+            >
+              Download
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
