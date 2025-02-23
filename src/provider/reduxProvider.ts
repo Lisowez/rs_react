@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from './store';
 
-interface IState {
+export interface IState {
   favorites: number[];
 }
 

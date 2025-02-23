@@ -51,7 +51,11 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearch, loading }) => {
         onChange={handleChange}
         placeholder="Enter search term"
       />
-      <button onClick={handleSearch} disabled={loading}>
+      <button
+        data-testid="search-button"
+        onClick={handleSearch}
+        disabled={loading}
+      >
         {loading ? 'Searching...' : 'Search'}
       </button>
       <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>

@@ -38,6 +38,8 @@ export default tseslint.config(
       'react/jsx-no-target-blank': 'off',
       'react-hooks/exhaustive-deps': 'off',
       '@typescript-eslint/no-invalid-void-type': 'off',
+      'react-refresh/only-export-components': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
     },
     settings: {
       react: {
